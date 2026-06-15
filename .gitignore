@@ -1,0 +1,34 @@
+# TalentPulse AI Git Exclusions
+
+# Environment configurations
+.env
+.env.local
+.env.*.local
+
+# Databases and local persistence
+talentpulse.db
+talentpulse.db-journal
+
+# Python build and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+venv/
+ENV/
+env/
+
+# IDE settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

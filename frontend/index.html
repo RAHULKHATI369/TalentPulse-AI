@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentPulse AI - Enterprise Candidate Screening Platform</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Style Sheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Floating animated gradients in background -->
+  <div class="bg-glow-orb orb-1"></div>
+  <div class="bg-glow-orb orb-2"></div>
+  <div class="bg-glow-orb orb-3"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="logo.png" alt="TalentPulse AI Logo" class="brand-logo-img">
+      </div>
+      
+      <nav class="nav-menu">
+        <a href="#upload" class="nav-item active" id="nav-upload" data-tab="upload">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+          </svg>
+          Bulk Upload
+        </a>
+        <a href="#screening" class="nav-item" id="nav-screening" data-tab="screening">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="9" y1="3" x2="9" y2="21"/>
+            <line x1="9" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="15" x2="21" y2="15"/>
+          </svg>
+          Candidate Screening
+        </a>
+        <a href="#analytics" class="nav-item" id="nav-analytics" data-tab="analytics">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Behavioral Analytics
+        </a>
+        <a href="#simulator" class="nav-item" id="nav-simulator" data-tab="simulator">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Simulator Logs
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="engine-badge">
+          <span class="pulse-dot"></span>
+          Gemini 1.5 Pro Active
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Dashboard Container -->
+    <main class="main-content">
+      <!-- Top Metrics Dashboard Stats -->
+      <header class="top-bar">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Total Candidates</span>
+              <div class="stat-icon-wrapper blue-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="stat-total-candidates">0</div>
+            <div class="stat-trend trend-neutral">Database context parsed</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Anomalies Flagged</span>
+              <div class="stat-icon-wrapper orange-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              </div>
+            </div>
+            <div class="stat-value text-anomaly" id="stat-total-anomalies">0</div>
+            <div class="stat-trend trend-down">Z-Score threshold > 2.5</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Simulations Run</span>
+              <div class="stat-icon-wrapper emerald-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+            <div class="stat-value" id="stat-total-interviews">0</div>
+            <div class="stat-trend trend-up">AI Agent evaluations</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <span class="stat-title">Avg Performance</span>
+              <div class="stat-icon-wrapper purple-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+              </div>
+            </div>
+            <div class="stat-value text-emerald" id="stat-avg-performance">0.0%</div>
+            <div class="stat-trend trend-up">Simulated responses index</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- View Wrapper for Tabbed navigation -->
+      <div class="view-wrapper">
+
+        <!-- TAB 1: BULK UPLOAD VIEW -->
+        <section id="view-upload" class="tab-view active">
+          <div class="glass-panel">
+            <h1 class="view-title">Ingest Candidate Resumes (PDF / Word / ZIP)</h1>
+            <p class="view-subtitle">Upload raw candidate CVs in PDF or Word (.docx) formats (or a ZIP archive containing PDF/TXT/DOCX files) to run real-time automated parsing, structural JSON extraction, and Z-Score experience anomaly calculations.</p>
+
+            <div class="drop-zone" id="upload-dropzone">
+              <svg class="upload-large-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <h3 class="drop-title">Upload Resumes (PDF / Word / ZIP)</h3>
+              <p class="drop-description">Drag and drop PDF, Word (.docx), or ZIP files here, or click anywhere inside this box to browse</p>
+              <input type="file" id="upload-file-input" multiple accept=".pdf,.docx,.zip" class="hidden">
+              <button class="btn btn-primary" id="btn-simulate-upload" style="display:none;">Load Enterprise Seed Data</button>
+            </div>
+
+            <!-- Ingestion progress tracker logs -->
+            <div class="progress-panel hidden" id="upload-progress-panel">
+              <div class="progress-header">
+                <span class="progress-title" id="progress-status-title">Ingesting PDF files...</span>
+                <span class="progress-percentage" id="progress-status-percentage">0%</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="upload-progress-bar"></div>
+              </div>
+              
+              <div class="progress-steps">
+                <div class="step-item" id="step-schema">
+                  <div class="step-bullet"></div>
+                  <span class="step-text" id="step-schema-text">Uploading files to application server</span>
+                </div>
+                <div class="step-item" id="step-embeddings">
+                  <div class="step-bullet"></div>
+                  <span class="step-text" id="step-embeddings-text">Extracting resume text via pypdf running on concurrent streams</span>
+                </div>
+                <div class="step-item" id="step-persona">
+                  <div class="step-bullet"></div>
+                  <span class="step-text" id="step-persona-text">Parsing structured JSON candidate profiles using Gemini 1.5 Pro</span>
+                </div>
+                <div class="step-item" id="step-zscore">
+                  <div class="step-bullet"></div>
+                  <span class="step-text" id="step-zscore-text">Computing Z-Scores & mapping behavioral personas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: CANDIDATE SCREENING -->
+        <section id="view-screening" class="tab-view">
+          <!-- Job Description Configuration -->
+          <div class="glass-panel screening-config-panel">
+            <h2 class="section-title">Job Requirements Configuration</h2>
+            <p class="view-subtitle">Enter specific requirements. The API uses AI Studio <code>text-embedding-004</code> vector models to compute semantic match scores.</p>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="job-title" class="form-label">Job Title</label>
+                <input type="text" id="job-title" class="form-input" value="Senior Full-Stack Engineer" placeholder="e.g. Senior Backend Dev">
+              </div>
+              <div class="form-group">
+                <label for="job-requirements" class="form-label">Key Requirements</label>
+                <textarea id="job-requirements" class="form-textarea" rows="3">Expertise in Python, FastAPI, database connections (MySQL/MariaDB), and vector AI structures. Must be a self-starter comfortable with modern DevOps pipelines (Docker, Kubernetes) and microservices.</textarea>
+              </div>
+            </div>
+            <div class="action-bar-right">
+              <button class="btn btn-success" id="btn-run-screening">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Execute Screening Match
+              </button>
+            </div>
+          </div>
+
+          <!-- Top Ranked profiles List -->
+          <div class="screening-results-section">
+            <div class="results-header">
+              <h2 class="section-title">Top Candidates Match Rankings</h2>
+              <span class="results-count" id="ranked-count">0 candidates processed</span>
+            </div>
+            <div class="candidates-list-container" id="candidates-list">
+              <!-- Dynamically populated candidate cards -->
+              <div class="empty-state-card">
+                <p>No candidates processed. Please load candidate records in the Bulk Upload tab first.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: BEHAVIORAL ANALYTICS -->
+        <section id="view-analytics" class="tab-view">
+          <div class="analytics-layout-grid">
+            <!-- Left Pane: Persona Statistics -->
+            <div class="glass-panel">
+              <h2 class="section-title">Candidate Persona Distributions</h2>
+              <p class="view-subtitle">Tone assessment from narratives mapped via Gemini 1.5 Pro</p>
+              
+              <div class="persona-stats-container">
+                <div class="persona-progress-item">
+                  <div class="persona-meta">
+                    <span class="persona-badge persona-leadership">Leadership</span>
+                    <span class="persona-count" id="count-leadership">0</span>
+                  </div>
+                  <div class="persona-bar"><div class="persona-bar-fill leadership-bg" id="bar-leadership" style="width: 0%"></div></div>
+                </div>
+
+                <div class="persona-progress-item">
+                  <div class="persona-meta">
+                    <span class="persona-badge persona-solo">Solo Builder</span>
+                    <span class="persona-count" id="count-solo">0</span>
+                  </div>
+                  <div class="persona-bar"><div class="persona-bar-fill solo-bg" id="bar-solo" style="width: 0%"></div></div>
+                </div>
+
+                <div class="persona-progress-item">
+                  <div class="persona-meta">
+                    <span class="persona-badge persona-thinker">Critical Thinker</span>
+                    <span class="persona-count" id="count-thinker">0</span>
+                  </div>
+                  <div class="persona-bar"><div class="persona-bar-fill thinker-bg" id="bar-thinker" style="width: 0%"></div></div>
+                </div>
+
+                <div class="persona-progress-item">
+                  <div class="persona-meta">
+                    <span class="persona-badge persona-collaborator">Collaborator</span>
+                    <span class="persona-count" id="count-collaborator">0</span>
+                  </div>
+                  <div class="persona-bar"><div class="persona-bar-fill collaborator-bg" id="bar-collaborator" style="width: 0%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Pane: Scalability Hook status -->
+            <div class="glass-panel">
+              <h2 class="section-title">External Runner Hooks & Scaling Settings</h2>
+              <p class="view-subtitle">Integration pipeline mappings with Hugging Face <code>ml-intern</code> validation feedback loops.</p>
+              
+              <div class="hook-status-box">
+                <div class="hook-row">
+                  <span class="hook-label">Webhook URL Status</span>
+                  <span class="hook-badge badge-active" id="hook-config-status">Active</span>
+                </div>
+                <div class="hook-row">
+                  <span class="hook-label">Current Scale replica pods</span>
+                  <span class="hook-value" id="hook-scale-replicas">1 Pod</span>
+                </div>
+                <div class="hook-row">
+                  <span class="hook-label">CPU Cores Allocated</span>
+                  <span class="hook-value" id="hook-scale-cpu">1.0 Cores</span>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-full" id="btn-trigger-scaling">Trigger Dynamic Scaling Evaluation</button>
+            </div>
+          </div>
+
+          <!-- Persona Detail list -->
+          <div class="glass-panel mt-4">
+            <h2 class="section-title">Filtered Behavioral Personas</h2>
+            <div class="persona-tabs">
+              <button class="persona-tab-btn active" data-filter="all">All</button>
+              <button class="persona-tab-btn" data-filter="Leadership">Leadership</button>
+              <button class="persona-tab-btn" data-filter="Solo Builder">Solo Builder</button>
+              <button class="persona-tab-btn" data-filter="Critical Thinker">Critical Thinker</button>
+              <button class="persona-tab-btn" data-filter="Collaborator">Collaborator</button>
+            </div>
+            <div class="persona-candidates-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Candidate</th>
+                    <th>Experience</th>
+                    <th>Vibe & Culture Persona</th>
+                    <th>Skills Density (Z-Score)</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="analytics-table-body">
+                  <tr>
+                    <td colspan="5" style="text-align: center;">No candidate data. Ingest seeds to view details.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: INTERVIEW SIMULATOR LOGS & SECURE WIZARD -->
+        <section id="view-simulator" class="tab-view">
+          <div class="glass-panel" id="simulator-main-panel">
+            <h1 class="view-title">Automated Interview Simulator Logs</h1>
+            <p class="view-subtitle">Review simulation records or initiate an interactive 3-question screening dialogue for your candidate profiles.</p>
+
+            <div class="interviews-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Candidate</th>
+                    <th>Email</th>
+                    <th>Tone / Persona</th>
+                    <th>Completion Status</th>
+                    <th>Simulated Performance Index</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="interviews-table-body">
+                  <tr>
+                    <td colspan="6" style="text-align: center;">No interview instances available. Load candidates first.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- SECURE INTERACTIVE 3-QUESTION CHAT WIZARD (HIDDEN BY DEFAULT) -->
+          <div class="glass-panel hidden" id="interview-wizard-panel">
+            <div class="wizard-header">
+              <button class="btn btn-icon-only" id="btn-wizard-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <div class="wizard-meta">
+                <h2 class="wizard-title" id="wizard-candidate-name">Interview Simulator</h2>
+                <span class="wizard-subtitle">AI Agent Automated Screening</span>
+              </div>
+              <div class="wizard-steps-badge"><span id="wizard-current-step">1</span> of 3</div>
+            </div>
+
+            <!-- Chat interface container -->
+            <div class="wizard-chat-box">
+              <div class="chat-message agent-message">
+                <div class="chat-bubble">
+                  <p id="wizard-question-text">Loading screening question...</p>
+                </div>
+              </div>
+              
+              <!-- User response field -->
+              <div class="chat-response-area">
+                <textarea id="wizard-response-input" class="form-textarea" placeholder="Type candidate's answer narrative here..." rows="4"></textarea>
+                <div class="wizard-actions">
+                  <span class="word-count-helper" id="wizard-word-count">0 characters</span>
+                  <button class="btn btn-primary" id="btn-wizard-next">
+                    Next Question
+                    <svg class="btn-icon-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIMULATION SUCCESS MODAL CARD -->
+          <div class="glass-panel hidden" id="interview-result-panel">
+            <div class="completion-container">
+              <div class="completion-icon-ring">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <h2 class="view-title text-emerald">Simulation Completed Successfully</h2>
+              <p class="view-subtitle">Candidate responses evaluated. Results appended to MariaDB database instance.</p>
+              
+              <div class="result-score-card">
+                <span class="result-score-label">Simulated Performance Index</span>
+                <span class="result-score-value" id="result-score-percent">0.0%</span>
+              </div>
+
+              <button class="btn btn-primary" id="btn-close-result">Return to Logs</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

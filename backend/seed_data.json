@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Alex Mercer",
+    "email": "alex.mercer@gmail.com",
+    "experience_years": 8.0,
+    "skills": "Python, Django, Flask, PostgreSQL, Docker, AWS, System Design, Team Mentorship",
+    "resume_text": "Experienced software engineering leader with over 8 years in the industry. Spearheaded a team of 6 engineers to build scalable SaaS architectures on AWS. Passionate about mentoring junior developers and establishing clean code methodologies."
+  },
+  {
+    "name": "Sarah Connor",
+    "email": "sarah.c@cyberdyne.io",
+    "experience_years": 1.0,
+    "skills": "Kubernetes, Docker, Python, FastAPI, React, Vue, Svelte, Angular, CSS, HTML, MySQL, PostgreSQL, MariaDB, MongoDB, Redis, Cassandra, Spark, Hadoop, Kafka, RabbitMQ, AWS, GCP, Azure, Terraform, Ansible, Jenkins, Git, Github, CI/CD, Rust, Go, C++, Java, PyTorch, TensorFlow, Scikit-Learn, Pandas, NumPy, Tableau, PowerBI, Jira, Confluence, Figma, Agile, Scrum, Kanban",
+    "resume_text": "Recent bootcamp graduate eager to solve complex problems. Extremely fast learner with a passion for learning every tool possible. Looking for a junior developer position."
+  },
+  {
+    "name": "Elena Rostova",
+    "email": "elena.r@yandex.com",
+    "experience_years": 12.0,
+    "skills": "Java, Spring Boot, microservices, Kubernetes, Oracle, Architecture, Kubernetes, CI/CD, Agile",
+    "resume_text": "Principal Architect with a decade of experience designing microservices architectures. Excel at driving architectural reviews, working across distributed teams, and aligning business requirements with technical delivery."
+  },
+  {
+    "name": "Liam Chen",
+    "email": "liam.chen@techcorp.com",
+    "experience_years": 4.5,
+    "skills": "Rust, WebAssembly, Go, C++, Performance Tuning, Linux Kernel, Compilers",
+    "resume_text": "Deeply technical developer specializing in system-level software, memory optimization, and WebAssembly compilation. Prefer deep-dive coding tasks and compiler optimizations over leadership tracks."
+  },
+  {
+    "name": "David Miller",
+    "email": "david.miller@freelance.org",
+    "experience_years": 6.0,
+    "skills": "React, Node.js, Express, JavaScript, CSS, HTML5, MongoDB, Tailwind, UI/UX",
+    "resume_text": "Dedicated full-stack solo builder creating responsive web apps for global clients. Experienced with end-to-end deployment, user testing, and responsive designs. Work independently to deliver finished products."
+  },
+  {
+    "name": "Dr. Aris Thorne",
+    "email": "aris.thorne@institute.org",
+    "experience_years": 10.0,
+    "skills": "R, Python, PyTorch, Mathematical Modeling, Deep Learning, Research, Statistics, Data Analysis",
+    "resume_text": "Senior ML researcher specializing in statistical anomalies, deep neural network modeling, and mathematical validations. Enjoy studying complex theoretical limits and writing research papers."
+  },
+  {
+    "name": "Emily Watson",
+    "email": "emily.watson@collaborative.net",
+    "experience_years": 5.0,
+    "skills": "Scrum, Jira, Agile, Project Management, Cross-functional communication, Client Relations, QA",
+    "resume_text": "Project facilitator and Agile lead. Passionate about breaking down complex requirements, organizing cross-functional sprints, and bridging the gap between product management and engineering teams."
+  },
+  {
+    "name": "Kevin Peterson",
+    "email": "kevin.p@fastgrowth.com",
+    "experience_years": 0.5,
+    "skills": "HTML, CSS, JavaScript, React, Angular, Vue, Node.js, Express, Koa, NestJS, Python, FastAPI, Django, Flask, Ruby on Rails, PHP, Laravel, Go, Rust, Java, Spring Boot, C#, ASP.NET, MySQL, PostgreSQL, MariaDB, SQLite, MongoDB, Redis, Docker, Kubernetes, AWS, GCP, Firebase, Git, Github, Gitlab, Bitbucket, CI/CD, Jenkins, TravisCI, CircleCI, Jest, Mocha, Cypress, Selenium, Webpack, Vite, Babel, Rollup, ESLint, Prettier, Serverless, GraphQL, REST API, WebSockets",
+    "resume_text": "Self-taught coding prodigy with 6 months of intense training. Mastered over 40 programming environments and dev tools. Ready for a Senior Architect position."
+  },
+  {
+    "name": "Sophia Martinez",
+    "email": "sophia.m@designs.co",
+    "experience_years": 3.0,
+    "skills": "Figma, Illustrator, CSS, HTML5, React, UI/UX, Design Systems",
+    "resume_text": "UI/UX engineer who bridges the gap between high-fidelity layouts and interactive React components. Focused on accessibility, design tokens, and user experience."
+  },
+  {
+    "name": "Marcus Vance",
+    "email": "marcus.vance@enterprise.com",
+    "experience_years": 15.0,
+    "skills": "Enterprise Architecture, Large Scale Systems, SQL, Java, COBOL, DB2, mainframe",
+    "resume_text": "Legacy migration expert with 15 years of experience transition complex mainframe systems to modern service-oriented architectures. Exceptional analytical and risk management skills."
+  }
+]

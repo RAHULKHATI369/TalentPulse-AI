@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.11
+    container_name: talentpulse_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: talentpulse_root_password
+      MYSQL_DATABASE: talentpulse_db
+      MYSQL_USER: talentpulse_user
+      MYSQL_PASSWORD: talentpulse_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u$$MYSQL_USER -p$$MYSQL_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: talentpulse_app
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=mysql+pymysql://talentpulse_user:talentpulse_password@db:3306/talentpulse_db
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - HOST=0.0.0.0
+      - PORT=8000
+      - DEBUG=true
+      - ML_INTERN_HOOK_URL=http://web:8000/api/hooks/callback # Default self loop for callback tests
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mariadb_data:
