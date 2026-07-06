@@ -45,5 +45,5 @@ ENV HOST=0.0.0.0
 ENV PORT=8000
 ENV PYTHONUNBUFFERED=1
 
-# Run server with uvicorn
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run server with uvicorn (reads dynamic PORT env var from Cloud Run)
+CMD ["sh", "-c", "uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT"]
