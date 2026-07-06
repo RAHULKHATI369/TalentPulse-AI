@@ -1,0 +1,16 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.git/
+.gitignore
+.gemini/
+.agents/
+talentpulse.db
+backend/app/talentpulse.db
+node_modules/
+.vscode/
+.idea/
+*.log

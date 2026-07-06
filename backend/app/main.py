@@ -279,7 +279,7 @@ async def upload_candidates_pdf(
                 if not text:
                     raise ValueError(f"No text content could be extracted from {upload_file.filename}")
                 
-                # 3. Call Gemini to parse JSON representation
+                # 3. Call Gemini to parse JSON representation and evaluations in one single call
                 profile = await gemini_service.extract_structured_candidate_data(text)
                 
                 # 4. Save to Database
@@ -287,6 +287,25 @@ async def upload_candidates_pdf(
                 name = profile.get("name", "Unknown Candidate")
                 exp = profile.get("experience_years", 0.0)
                 skills = profile.get("skills", "Technical Skills")
+                persona = profile.get("persona", "Collaborator")
+
+                # Format pros, cons, alignment reason list into why_report Markdown
+                pros_list = profile.get("pros", ["Strong technical background."])
+                cons_list = profile.get("cons", ["Requires standard onboarding."])
+                alignment = profile.get("alignment_reason", "Aligned with standard roles.")
+
+                pros_md = "\n".join([f"- {p}" for p in pros_list])
+                cons_md = "\n".join([f"- {c}" for c in cons_list])
+                why_report = (
+                    f"### Evaluation Report for {name}\n\n"
+                    f"**Pros**:\n{pros_md}\n\n"
+                    f"**Cons**:\n{cons_md}\n\n"
+                    f"**Alignment Reason**:\n- {alignment}"
+                )
+
+                # Generate embedding vector
+                vector_text = f"Candidate Name: {name}. Skills: {skills}. Experience: {exp} years. Narrative: {text[:1000]}"
+                vector = await gemini_service.get_embedding_vector(vector_text)
 
                 # Locate or update candidate to keep it resilient
                 existing = db.query(Candidate).filter(Candidate.email == email).first()
@@ -295,6 +314,9 @@ async def upload_candidates_pdf(
                     existing.experience_years = exp
                     existing.skills = skills
                     existing.resume_text = text
+                    existing.resume_tone = persona
+                    existing.why_report = why_report
+                    existing.embedding = json.dumps(vector)
                     db_cand = existing
                 else:
                     db_cand = Candidate(
@@ -302,34 +324,15 @@ async def upload_candidates_pdf(
                         email=email,
                         experience_years=exp,
                         skills=skills,
-                        resume_text=text
+                        resume_text=text,
+                        resume_tone=persona,
+                        why_report=why_report,
+                        embedding=json.dumps(vector)
                     )
                     db.add(db_cand)
                 
                 db.commit()
                 db.refresh(db_cand)
-                
-                # 5. Populate embeddings, persona tone, why report synchronously to return them immediately
-                persona = await gemini_service.generate_candidate_tone_and_persona(
-                    name=db_cand.name,
-                    skills=db_cand.skills,
-                    resume_text=db_cand.resume_text
-                )
-                db_cand.resume_tone = persona
-
-                vector_text = f"Candidate Name: {db_cand.name}. Skills: {db_cand.skills}. Experience: {db_cand.experience_years} years. Narrative: {db_cand.resume_text or ''}"
-                vector = await gemini_service.get_embedding_vector(vector_text)
-                db_cand.embedding = json.dumps(vector)
-
-                why_report = await gemini_service.generate_why_this_candidate_report(
-                    name=db_cand.name,
-                    skills=db_cand.skills,
-                    experience_years=db_cand.experience_years,
-                    persona=persona
-                )
-                db_cand.why_report = why_report
-                
-                db.commit()
                 
                 # Trigger Hugging Face ml-intern hook
                 await hooks.trigger_ml_intern_validation_hook(
@@ -411,13 +414,32 @@ async def upload_candidates_zip(
                 if not text or not text.strip():
                     raise ValueError("No text content could be parsed from the document.")
 
-                # 2. Extract structured candidate JSON profile
+                # 2. Extract structured candidate JSON profile and evaluation in one single call
                 profile = await gemini_service.extract_structured_candidate_data(text)
 
                 email = profile.get("email", "unknown@example.com")
                 name = profile.get("name", "Unknown Candidate")
                 exp = profile.get("experience_years", 0.0)
                 skills = profile.get("skills", "Technical Skills")
+                persona = profile.get("persona", "Collaborator")
+
+                # Format pros, cons, alignment reason list into why_report Markdown
+                pros_list = profile.get("pros", ["Strong technical background."])
+                cons_list = profile.get("cons", ["Requires standard onboarding."])
+                alignment = profile.get("alignment_reason", "Aligned with standard roles.")
+
+                pros_md = "\n".join([f"- {p}" for p in pros_list])
+                cons_md = "\n".join([f"- {c}" for c in cons_list])
+                why_report = (
+                    f"### Evaluation Report for {name}\n\n"
+                    f"**Pros**:\n{pros_md}\n\n"
+                    f"**Cons**:\n{cons_md}\n\n"
+                    f"**Alignment Reason**:\n- {alignment}"
+                )
+
+                # Generate embedding vector
+                vector_text = f"Candidate Name: {name}. Skills: {skills}. Experience: {exp} years. Narrative: {text[:1000]}"
+                vector = await gemini_service.get_embedding_vector(vector_text)
 
                 # 3. Relational Storage committing (updates if exists to be resilient)
                 existing = db.query(Candidate).filter(Candidate.email == email).first()
@@ -426,6 +448,9 @@ async def upload_candidates_zip(
                     existing.experience_years = exp
                     existing.skills = skills
                     existing.resume_text = text
+                    existing.resume_tone = persona
+                    existing.why_report = why_report
+                    existing.embedding = json.dumps(vector)
                     db_cand = existing
                 else:
                     db_cand = Candidate(
@@ -433,34 +458,15 @@ async def upload_candidates_zip(
                         email=email,
                         experience_years=exp,
                         skills=skills,
-                        resume_text=text
+                        resume_text=text,
+                        resume_tone=persona,
+                        why_report=why_report,
+                        embedding=json.dumps(vector)
                     )
                     db.add(db_cand)
 
                 db.commit()
                 db.refresh(db_cand)
-
-                # 4. Fill in Gemini embeds, reports, and tone personas
-                persona = await gemini_service.generate_candidate_tone_and_persona(
-                    name=db_cand.name,
-                    skills=db_cand.skills,
-                    resume_text=db_cand.resume_text
-                )
-                db_cand.resume_tone = persona
-
-                vector_text = f"Candidate Name: {db_cand.name}. Skills: {db_cand.skills}. Experience: {db_cand.experience_years} years. Narrative: {db_cand.resume_text or ''}"
-                vector = await gemini_service.get_embedding_vector(vector_text)
-                db_cand.embedding = json.dumps(vector)
-
-                why_report = await gemini_service.generate_why_this_candidate_report(
-                    name=db_cand.name,
-                    skills=db_cand.skills,
-                    experience_years=db_cand.experience_years,
-                    persona=persona
-                )
-                db_cand.why_report = why_report
-
-                db.commit()
 
                 # Trigger Hugging Face validation webhook
                 await hooks.trigger_ml_intern_validation_hook(
