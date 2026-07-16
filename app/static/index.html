@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentPulse AI - Real-Time Multimodal Stress & EQ Tracker</title>
+  <!-- Google Fonts Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-primary: #020617;
+      --bg-secondary: #0f172a;
+      --glass-bg: rgba(15, 23, 42, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --accent-color: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      
+      --color-green: #10b981;
+      --color-yellow: #f59e0b;
+      --color-red: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background Glows */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(140px);
+      z-index: 0;
+      opacity: 0.5;
+      pointer-events: none;
+      animation: float 20s infinite alternate ease-in-out;
+    }
+    .orb-1 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #4f46e5 0%, transparent 80%);
+      top: -10%;
+      left: -10%;
+    }
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #06b6d4 0%, transparent 80%);
+      bottom: -10%;
+      right: -10%;
+      animation-delay: -5s;
+    }
+    .orb-3 {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, #d946ef 0%, transparent 80%);
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -10s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(50px, 30px) scale(1.1); }
+      100% { transform: translate(-20px, -40px) scale(0.9); }
+    }
+
+    /* Layout Containers */
+    header {
+      padding: 2rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(2, 6, 23, 0.6);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .brand h1 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      background: linear-gradient(to right, #6366f1, #a855f7, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .brand p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .engine-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #cbd5e1;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--color-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--color-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.9); opacity: 0.6; }
+      50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px var(--color-green); }
+      100% { transform: scale(0.9); opacity: 0.6; }
+    }
+
+    .main-wrapper {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 4rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+      flex-grow: 1;
+      z-index: 5;
+    }
+
+    @media (max-width: 1024px) {
+      .main-wrapper {
+        grid-template-columns: 1fr;
+        padding: 2rem;
+      }
+      header {
+        padding: 1.5rem 2rem;
+      }
+    }
+
+    /* Cards & Components */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+      padding: 2rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    /* Left Column: Media Streaming Sources */
+    .stream-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .video-viewport-wrapper {
+      width: 100%;
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 1.6;
+      background: #090d16;
+      border: 1px solid var(--glass-border);
+      box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+    }
+
+    .video-viewport {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1); /* mirror effect */
+    }
+
+    .video-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 2rem;
+      z-index: 2;
+    }
+
+    .video-placeholder svg {
+      width: 48px;
+      height: 48px;
+      stroke: var(--text-muted);
+      margin-bottom: 12px;
+      animation: drift 4s ease-in-out infinite;
+    }
+
+    @keyframes drift {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* Control Panel */
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Sound Waves Indicator */
+    .audio-wave-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 32px;
+      margin-top: 10px;
+      opacity: 0.3;
+      transition: opacity 0.3s ease;
+    }
+
+    .audio-wave-container.active {
+      opacity: 1;
+    }
+
+    .wave-bar {
+      width: 4px;
+      height: 6px;
+      background: var(--accent-color);
+      border-radius: 2px;
+      transition: height 0.1s ease;
+    }
+
+    .audio-wave-container.active .wave-bar {
+      animation: wave-bounce 0.8s infinite ease-in-out alternate;
+    }
+
+    .audio-wave-container.active .wave-bar:nth-child(1) { animation-delay: 0.1s; }
+    .audio-wave-container.active .wave-bar:nth-child(2) { animation-delay: 0.3s; }
+    .audio-wave-container.active .wave-bar:nth-child(3) { animation-delay: 0.5s; }
+    .audio-wave-container.active .wave-bar:nth-child(4) { animation-delay: 0.2s; }
+    .audio-wave-container.active .wave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+    @keyframes wave-bounce {
+      0% { height: 6px; }
+      100% { height: 28px; background: #06b6d4; }
+    }
+
+    /* Right Column: Dashboard Analytics */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Stress Gauge Card */
+    .gauge-card {
+      grid-column: span 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .gauge-wrapper {
+      position: relative;
+      width: 140px;
+      height: 140px;
+    }
+
+    .gauge-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .gauge-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.05);
+      stroke-width: 12;
+    }
+
+    .gauge-progress {
+      fill: none;
+      stroke: var(--accent-color);
+      stroke-width: 12;
+      stroke-linecap: round;
+      stroke-dasharray: 402;
+      stroke-dashoffset: 402;
+      transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.5s ease;
+    }
+
+    .gauge-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .gauge-number {
+      font-size: 2rem;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      line-height: 1;
+    }
+
+    .gauge-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .gauge-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    /* Emotion Card */
+    .emotion-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .emotion-badge {
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      margin: 10px 0;
+      letter-spacing: -0.2px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+
+    .emotion-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      text-align: center;
+    }
+
+    /* Sparkline Trend Card */
+    .trend-card {
+      grid-column: span 2;
+    }
+
+    .card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-header-flex h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .trend-sparkline-canvas {
+      width: 100%;
+      height: 100px;
+      background: rgba(2, 6, 23, 0.4);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* Insights Card */
+    .insights-card {
+      grid-column: span 2;
+    }
+
+    .insights-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+
+    .insight-text {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      background: rgba(99, 102, 241, 0.05);
+      border-left: 3px solid var(--accent-color);
+      padding: 12px 16px;
+      border-radius: 0 12px 12px 0;
+      min-height: 56px;
+    }
+
+    /* Log Stream Card */
+    .log-card {
+      grid-column: span 2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .log-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 10px;
+    }
+
+    .log-terminal {
+      background: #020617;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.8rem;
+      padding: 14px;
+      height: 120px;
+      overflow-y: auto;
+      color: #38bdf8;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      scroll-behavior: smooth;
+    }
+
+    .log-line {
+      display: flex;
+      gap: 10px;
+    }
+
+    .log-time {
+      color: #64748b;
+    }
+
+    .log-msg {
+      color: #cbd5e1;
+    }
+
+    .log-msg.accent {
+      color: #38bdf8;
+    }
+
+    .log-msg.alert {
+      color: var(--color-yellow);
+    }
+
+    /* Footer elements */
+    footer {
+      padding: 1.5rem 4rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--glass-border);
+      background: rgba(2, 6, 23, 0.4);
+      z-index: 10;
+      margin-top: auto;
+    }
+
+    footer a {
+      color: var(--accent-color);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <h1>TalentPulse AI</h1>
+      <p>Multimodal Mental Health & Stress Analytics Engine</p>
+    </div>
+    <div class="engine-badge">
+      <span class="pulse-dot" id="engine-pulse"></span>
+      <span id="engine-status">Systems Online</span>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="main-wrapper">
+    
+    <!-- Left Column: Video/Audio Input Controls -->
+    <div class="stream-container">
+      
+      <!-- Video Input card -->
+      <div class="glass-card">
+        <div class="video-viewport-wrapper">
+          <video id="video-stream" class="video-viewport" autoplay playsinline muted></video>
+          <div id="video-placeholder-ui" class="video-placeholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 7a2 2 0 0 0-2.45-1.45L16 7V5a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2l4.55 1.45A2 2 0 0 0 23 17V7z"/>
+            </svg>
+            <p style="font-weight: 500; font-size: 1.05rem; margin-bottom: 4px;">Camera Feed Off</p>
+            <p style="font-size: 0.8rem; color: #64748b;">Activate stress tracking to start video and audio capture</p>
+          </div>
+        </div>
+
+        <!-- Audio wave feedback -->
+        <div class="audio-wave-container" id="audio-visualizer">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+      </div>
+
+      <!-- Controls card -->
+      <div class="glass-card control-panel">
+        <button id="btn-toggle-tracking" class="btn btn-primary">
+          <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Start Stress Tracking
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Real-Time Emotional Analytics -->
+    <div class="dashboard-grid">
+      
+      <!-- Stress Gauge Card -->
+      <div class="glass-card gauge-card">
+        <div class="gauge-wrapper">
+          <svg class="gauge-svg">
+            <circle class="gauge-bg" cx="70" cy="70" r="64" />
+            <circle id="gauge-ring" class="gauge-progress" cx="70" cy="70" r="64" />
+          </svg>
+          <div class="gauge-value">
+            <div id="stress-number" class="gauge-number">--</div>
+            <div class="gauge-label">Score</div>
+          </div>
+        </div>
+        <div class="gauge-title" id="stress-status-title">Awaiting Data</div>
+      </div>
+
+      <!-- Emotion Card -->
+      <div class="glass-card emotion-card">
+        <div class="emotion-title">Dominant Emotion</div>
+        <div id="emotion-display" class="emotion-badge">--</div>
+        <div id="emotion-badge-desc" style="font-size: 0.8rem; color: var(--text-muted);">Awaiting stream...</div>
+      </div>
+
+      <!-- Cognitive Load Insights Card -->
+      <div class="glass-card insights-card">
+        <h3>Gemini Multimodal Insights</h3>
+        <div id="insights-text" class="insight-text">
+          Activate the tracker stream to begin real-time mental health analytics. Facial features and voice parameters will feed the model.
+        </div>
+      </div>
+
+      <!-- Historical Trend Card -->
+      <div class="glass-card trend-card">
+        <div class="card-header-flex">
+          <h3>Stress Score History</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Live updates every 3s</span>
+        </div>
+        <canvas id="trend-canvas" class="trend-sparkline-canvas"></canvas>
+      </div>
+
+      <!-- Console / Logger Card -->
+      <div class="glass-card log-card">
+        <h3>Stream Console Logs</h3>
+        <div id="terminal-logs" class="log-terminal">
+          <div class="log-line">
+            <span class="log-time">[System]</span>
+            <span class="log-msg">TalentPulse Engine initialized. Ready to process.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>TalentPulse AI &copy; 2026. Powered by Google Gemini 2.5 Flash. Secure End-to-End Multimodal Analysis.</p>
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    let isTracking = false;
+    let streamInstance = null;
+    let audioRecorder = null;
+    let audioChunks = [];
+    let pollingInterval = null;
+    let stressHistory = [];
+    
+    // UI elements
+    const btnToggle = document.getElementById('btn-toggle-tracking');
+    const videoStream = document.getElementById('video-stream');
+    const placeholderUI = document.getElementById('video-placeholder-ui');
+    const audioVisualizer = document.getElementById('audio-visualizer');
+    
+    const gaugeRing = document.getElementById('gauge-ring');
+    const stressNumber = document.getElementById('stress-number');
+    const stressTitle = document.getElementById('stress-status-title');
+    
+    const emotionDisplay = document.getElementById('emotion-display');
+    const emotionDesc = document.getElementById('emotion-badge-desc');
+    const insightsText = document.getElementById('insights-text');
+    const terminalLogs = document.getElementById('terminal-logs');
+    
+    const trendCanvas = document.getElementById('trend-canvas');
+    const ctxTrend = trendCanvas.getContext('2d');
+
+    // Resize trend canvas to match element dimensions
+    function resizeCanvas() {
+      trendCanvas.width = trendCanvas.clientWidth;
+      trendCanvas.height = 100;
+      drawSparkline();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Logger utility
+    function appendLog(message, type = 'accent') {
+      const timeString = new Date().toLocaleTimeString();
+      const logLine = document.createElement('div');
+      logLine.className = 'log-line';
+      
+      let msgClass = 'log-msg';
+      if (type === 'alert') msgClass += ' alert';
+      if (type === 'accent') msgClass += ' accent';
+      
+      logLine.innerHTML = `
+        <span class="log-time">[${timeString}]</span>
+        <span class="${msgClass}">${message}</span>
+      `;
+      
+      terminalLogs.appendChild(logLine);
+      terminalLogs.scrollTop = terminalLogs.scrollHeight;
+    }
+
+    // Toggle Tracking
+    btnToggle.addEventListener('click', async () => {
+      if (isTracking) {
+        stopTracking();
+      } else {
+        await startTracking();
+      }
+    });
+
+    // Start Video/Audio Tracking
+    async function startTracking() {
+      appendLog("Requesting access to camera and microphone...", 'alert');
+      try {
+        streamInstance = await navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480, frameRate: { ideal: 15 } },
+          audio: true
+        });
+        
+        videoStream.srcObject = streamInstance;
+        placeholderUI.style.display = 'none';
+        audioVisualizer.classList.add('active');
+        
+        isTracking = true;
+        btnToggle.className = 'btn btn-danger';
+        btnToggle.innerHTML = `
+          <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg>
+          Stop Tracking
+        `;
+        
+        appendLog("Camera and microphone connected. Starting streaming loop.", 'accent');
+        
+        // Start the recording loops
+        startAudioRecorder();
+        startPollingLoop();
+        
+      } catch (err) {
+        console.error("Device access denied:", err);
+        appendLog(`Access Denied: ${err.message}`, 'alert');
+        alert("Could not access camera or microphone. Please check permissions.");
+      }
+    }
+
+    // Stop Tracking
+    function stopTracking() {
+      appendLog("Stopping media streams...", 'alert');
+      
+      if (streamInstance) {
+        streamInstance.getTracks().forEach(track => track.stop());
+      }
+      videoStream.srcObject = null;
+      placeholderUI.style.display = 'flex';
+      audioVisualizer.classList.remove('active');
+      
+      if (audioRecorder && audioRecorder.state !== 'inactive') {
+        audioRecorder.stop();
+      }
+      
+      clearInterval(pollingInterval);
+      
+      isTracking = false;
+      btnToggle.className = 'btn btn-primary';
+      btnToggle.innerHTML = `
+        <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Start Stress Tracking
+      `;
+      
+      appendLog("Tracking Stopped.", 'alert');
+    }
+
+    // Initialize/Restart Audio MediaRecorder
+    function startAudioRecorder() {
+      if (!streamInstance) return;
+      
+      const audioTracks = streamInstance.getAudioTracks();
+      if (audioTracks.length === 0) return;
+      
+      const audioStream = new MediaStream(audioTracks);
+      
+      // Select appropriate mime type
+      let options = { mimeType: 'audio/webm' };
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options = { mimeType: 'audio/ogg' };
+      }
+      
+      audioRecorder = new MediaRecorder(audioStream, options);
+      audioChunks = [];
+      
+      audioRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
+        }
+      };
+      
+      audioRecorder.onstop = async () => {
+        if (audioChunks.length === 0) return;
+        const audioBlob = new Blob(audioChunks, { type: options.mimeType });
+        audioChunks = [];
+        
+        // Convert to base64 and capture frame
+        const audioBase64 = await blobToBase64(audioBlob);
+        const videoBase64 = captureVideoFrame();
+        
+        // Send payload to backend
+        sendPayloadToBackend(videoBase64, audioBase64);
+        
+        // Restart recorder if tracking is still active
+        if (isTracking && audioRecorder.state === 'inactive') {
+          try {
+            audioRecorder.start();
+          } catch(e) {
+            console.error("Audio recorder restart error", e);
+          }
+        }
+      };
+      
+      // Start recording
+      audioRecorder.start();
+      appendLog("Audio encoder active.", 'accent');
+    }
+
+    // Capture single video frame from video stream
+    function captureVideoFrame() {
+      if (!streamInstance || videoStream.paused || videoStream.ended) return null;
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = videoStream.videoWidth || 320;
+      canvas.height = videoStream.videoHeight || 240;
+      
+      const ctx = canvas.getContext('2d');
+      // Mirror the frame drawing to align with video preview
+      ctx.translate(canvas.width, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(videoStream, 0, 0, canvas.width, canvas.height);
+      
+      return canvas.toDataURL('image/jpeg', 0.6); // Compress to 60% quality
+    }
+
+    // Convert blob file to base64 string
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    // Periodic interval trigger
+    function startPollingLoop() {
+      // Trigger evaluation every 3.5 seconds
+      pollingInterval = setInterval(() => {
+        if (isTracking && audioRecorder && audioRecorder.state === 'recording') {
+          audioRecorder.stop(); // This triggers data submit + restart
+        }
+      }, 3500);
+    }
+
+    // Send payload
+    async function sendPayloadToBackend(videoBase64, audioBase64) {
+      if (!isTracking) return;
+      
+      appendLog("Submitting packet to Gemini analyzer...", 'accent');
+      
+      try {
+        const response = await fetch('/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            video_frame: videoBase64,
+            audio_chunk: audioBase64
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP Error Status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        updateDashboard(data);
+        
+      } catch (err) {
+        console.error("Payload send failed:", err);
+        appendLog(`Analysis Connection Error: ${err.message}`, 'alert');
+      }
+    }
+
+    // Update Dashboard Metrics
+    function updateDashboard(data) {
+      const score = data.stress_score;
+      const emotion = data.dominant_emotion;
+      const insights = data.insights;
+      
+      appendLog(`Response: Score=${score} | Emotion=${emotion}`, 'accent');
+      
+      // Update Stress score number
+      stressNumber.textContent = score;
+      
+      // Update radial gauge
+      updateGauge(score);
+      
+      // Update emotion
+      emotionDisplay.textContent = emotion;
+      
+      // Color-coding emotion and gauges
+      let color = 'var(--accent-color)';
+      let label = 'Low Stress';
+      
+      if (score < 30) {
+        color = 'var(--color-green)';
+        label = 'Stable / Serene';
+        emotionDisplay.style.color = 'var(--color-green)';
+        emotionDisplay.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+        emotionDesc.textContent = "Minimal autonomic stress markers.";
+      } else if (score < 65) {
+        color = 'var(--color-yellow)';
+        label = 'Moderate Stress / Engaged';
+        emotionDisplay.style.color = 'var(--color-yellow)';
+        emotionDisplay.style.borderColor = 'rgba(245, 158, 11, 0.3)';
+        emotionDesc.textContent = "Elevated focus / cognitive exertion.";
+      } else {
+        color = 'var(--color-red)';
+        label = 'High Tension / Anxiety';
+        emotionDisplay.style.color = 'var(--color-red)';
+        emotionDisplay.style.borderColor = 'rgba(239, 68, 110, 0.3)';
+        emotionDesc.textContent = "High sympathetic nervous activation.";
+      }
+      
+      stressTitle.textContent = label;
+      stressTitle.style.color = color;
+      gaugeRing.style.stroke = color;
+      
+      // Update insights with typewriter effect
+      typewriterEffect(insightsText, insights);
+      
+      // Push history and draw trend
+      stressHistory.push(score);
+      if (stressHistory.length > 20) {
+        stressHistory.shift();
+      }
+      drawSparkline();
+    }
+
+    // Update radial gauge offset
+    function updateGauge(score) {
+      // Circumference of R=64 is 2 * pi * 64 = 402.12
+      const circumference = 402;
+      const offset = circumference - (score / 100) * circumference;
+      gaugeRing.style.strokeDashoffset = offset;
+    }
+
+    // Text typing effect
+    function typewriterEffect(element, text) {
+      element.innerHTML = '';
+      let index = 0;
+      function type() {
+        if (index < text.length) {
+          element.innerHTML += text.charAt(index);
+          index++;
+          setTimeout(type, 15);
+        }
+      }
+      type();
+    }
+
+    // Draw Sparkline history chart
+    function drawSparkline() {
+      const w = trendCanvas.width;
+      const h = trendCanvas.height;
+      
+      ctxTrend.clearRect(0, 0, w, h);
+      
+      if (stressHistory.length < 2) {
+        ctxTrend.font = '12px Inter';
+        ctxTrend.fillStyle = '#64748b';
+        ctxTrend.textAlign = 'center';
+        ctxTrend.fillText('Awaiting historical trends...', w/2, h/2);
+        return;
+      }
+      
+      ctxTrend.beginPath();
+      
+      const step = w / (stressHistory.length - 1);
+      
+      stressHistory.forEach((val, i) => {
+        const x = i * step;
+        const y = h - (val / 100) * (h - 20) - 10;
+        
+        if (i === 0) {
+          ctxTrend.moveTo(x, y);
+        } else {
+          ctxTrend.lineTo(x, y);
+        }
+      });
+      
+      // Create colorful stroke gradient
+      const gradient = ctxTrend.createLinearGradient(0, 0, w, 0);
+      gradient.addColorStop(0, '#6366f1');
+      gradient.addColorStop(0.5, '#a855f7');
+      gradient.addColorStop(1, '#06b6d4');
+      
+      ctxTrend.strokeStyle = gradient;
+      ctxTrend.lineWidth = 3;
+      ctxTrend.lineCap = 'round';
+      ctxTrend.lineJoin = 'round';
+      ctxTrend.stroke();
+      
+      // Draw gradient fill below sparkline
+      ctxTrend.lineTo(w, h);
+      ctxTrend.lineTo(0, h);
+      ctxTrend.closePath();
+      
+      const fillGradient = ctxTrend.createLinearGradient(0, 0, 0, h);
+      fillGradient.addColorStop(0, 'rgba(99, 102, 241, 0.15)');
+      fillGradient.addColorStop(1, 'rgba(2, 6, 23, 0)');
+      
+      ctxTrend.fillStyle = fillGradient;
+      ctxTrend.fill();
+      
+      // Draw points for each node
+      stressHistory.forEach((val, i) => {
+        const x = i * step;
+        const y = h - (val / 100) * (h - 20) - 10;
+        
+        ctxTrend.beginPath();
+        ctxTrend.arc(x, y, 4, 0, Math.PI * 2);
+        
+        let color = '#10b981';
+        if (val >= 30 && val < 65) color = '#f59e0b';
+        if (val >= 65) color = '#ef4444';
+        
+        ctxTrend.fillStyle = color;
+        ctxTrend.fill();
+      });
+    }
+  </script>
+</body>
+</html>
